@@ -1,17 +1,44 @@
 package org.example;
-
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import java.util.List;
+import java.util.concurrent.*;
 public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+    public static void main(String[] args){
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+        ExecutorService executores = Executors.newFixedThreadPool(2);
+
+        try {
+        List<Future<Double>> futurasRespostas = executores.invokeAll(List.of(
+                () ->{
+                    Thread.sleep(1000);
+                    return 80.0;
+                },
+                () ->{
+                    Thread.sleep(2000);
+                    return 130.0;
+                },
+                () ->{
+                    Thread.sleep(12000);
+                    return 10.0;
+                },
+                () ->{
+                    Thread.sleep(11000);
+                    return 250.0;
+                }
+        ));
+
+
+            for (Future<Double> i:futurasRespostas){
+                Double valorProcessado = i.get();
+                System.out.println("Valor processado:"+valorProcessado);
+
+            }
+        }catch (InterruptedException e){
+            System.err.println("Thread principal interrompida!");
+        }catch (ExecutionException e){
+            System.err.println("Erro no processamento:"+e.getCause().getMessage());
+        }finally {
+            Utilitarios.fecharThreadPool(executores);
         }
+
     }
 }
