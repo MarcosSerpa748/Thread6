@@ -3,7 +3,6 @@ import java.util.List;
 import java.util.concurrent.*;
 public class Main {
     public static void main(String[] args){
-
         ExecutorService executores = Executors.newFixedThreadPool(2);
 
         try {
@@ -24,20 +23,19 @@ public class Main {
                     Thread.sleep(11000);
                     return 250.0;
                 }
-        ));
-
+        ),5,TimeUnit.SECONDS);
 
             for (Future<Double> i:futurasRespostas){
-                Double valorProcessado = i.get();
-                System.out.println("Valor processado:"+valorProcessado);
-
+                if (!i.isCancelled()){
+                    System.out.println("Valor processado:"+i.get());
+                }
             }
         }catch (InterruptedException e){
             System.err.println("Thread principal interrompida!");
         }catch (ExecutionException e){
             System.err.println("Erro no processamento:"+e.getCause().getMessage());
         }finally {
-            Utilitarios.fecharThreadPool(executores);
+            executores.shutdown();
         }
 
     }
